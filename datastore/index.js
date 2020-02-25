@@ -22,35 +22,44 @@ exports.create = (text, callback) => {
       });
     }
   });
-
-
-  //check syntax for id
-  // items[id] = text;
-  //each file created needs to be it
-
-  // fs.writeFile();
-  //todos/dataDir/id/text
-  //create id
-  //create dateDir
-  //dateDir create file with ID
-  //contains text
-  //callback(null, item)
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  fs.readdir(exports.dataDir, (err, fileData) => {
+    if (err) {
+      throw ('Error reading all files');
+    } else {
+      var files = _.map(fileData, (file) => {
+        var replace = file.replace('.txt', '');
+        return {id: replace, text: replace};
+      });
+      // fileData.map(file => {
+      //   return {id, text};
+      // });
+      callback(null, files);
+    }
   });
-  callback(null, data);
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  var filePath = path.join(exports.dataDir, `${id}.txt`);
+  //create our path to individual file
+  //fs.readFile(path, callback
+  //check error
+  //if no error return callback
+  fs.readFile(filePath, 'utf8', (err, text) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      callback(null, {id: id, text: text});
+    }
+  });
+  // var text = items[id];
+
 };
 
 exports.update = (id, text, callback) => {
