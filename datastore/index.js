@@ -31,7 +31,7 @@ exports.readAll = (callback) => {
     } else {
       var files = _.map(fileData, (file) => {
         var replace = file.replace('.txt', '');
-        return {id: replace, text: replace};
+        return { id: replace, text: replace };
       });
       // fileData.map(file => {
       //   return {id, text};
@@ -55,7 +55,7 @@ exports.readOne = (id, callback) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
-      callback(null, {id: id, text: text});
+      callback(null, { id: id, text: text });
     }
   });
   // var text = items[id];
@@ -64,45 +64,48 @@ exports.readOne = (id, callback) => {
 
 exports.update = (id, text, callback) => {
   // var oldText
-  var newText = text;
   var filePath = path.join(exports.dataDir, `${id}.txt`);
   //create our path to individual file
   //fs.readFile(path, callback
   //check error
   //if no error return callback
-  fs.readFile(filePath, 'utf8', (err, text) => {
+  fs.readFile(filePath, 'utf8', (err, oldText) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
-      fs.writeFile(filePath, newText, 'utf8', (err) => {
+      fs.writeFile(filePath, text, 'utf8', (err) => {
         if (err) {
           throw ('ERROR');
         } else {
-          callback(null, {id: id, text: newText});
+          callback(null, { id: id, text: text });
         }
       });
     }
   });
-
-
-  // var item = items[id];
-  // if (!item) {
-  //   callback(new Error(`No item with id: ${id}`));
-  // } else {
-  //   items[id] = text;
-  //   callback(null, { id, text });
-  // }
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+
+  //access specific id file path
+  //if exists unlink it
+  // check err
+  //change counter to maintain current value
+  // run callback
+  var filePath = path.join(exports.dataDir, `${id}.txt`);
+
+  fs.readFile(filePath, 'utf8', (err) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          throw ('ERROR');
+        } else {
+          callback();
+        }
+      });
+    }
+  });
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
