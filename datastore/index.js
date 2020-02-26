@@ -16,29 +16,32 @@ exports.create = (text, callback) => {
       var filePath = path.join(exports.dataDir, `${current}.txt`);
       fs.writeFile(filePath, text, (err) => {
         if (err) {
-          return console.log('Invalid operation');
+          console.log('Invalid operation');
         }
-        return callback(null, { id: current, text: text });
+        callback(null, { id: current, text: text });
       });
     }
   });
 };
 
 exports.readAll = (callback) => {
-  fs.readdir(exports.dataDir, (err, fileData) => {
-    if (err) {
-      throw ('Error reading all files');
-    } else {
-      var files = _.map(fileData, (file) => {
-        var replace = file.replace('.txt', '');
-        return { id: replace, text: replace };
-      });
-      // fileData.map(file => {
-      //   return {id, text};
-      // });
-      callback(null, files);
-    }
+  return new Promise((resolve, reject) => {
+    fs.readdir(exports.dataDir, (err, fileData) => {
+      if (err) {
+        reject(err, console.log('Error reading all files'));
+      } else {
+        var files = _.map(fileData, (file) => {
+          var replace = file.replace('.txt', '');
+          return { id: replace, text: replace };
+        });
+        // fileData.map(file => {
+        //   return {id, text};
+        // });
+        resolve(files);
+      }
+    });
   });
+
   // var data = _.map(items, (text, id) => {
   //   return { id, text };
   // });
